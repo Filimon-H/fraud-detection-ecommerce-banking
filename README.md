@@ -1,126 +1,145 @@
-# 🔍 Fraud Detection Project – E-commerce & Credit Card
 
-This project analyzes and prepares two datasets — one from an **e-commerce platform** and another from **credit card transactions** — to detect patterns of fraudulent behavior and prepare the data for predictive modeling.
+# 🔍 Fraud Detection for E-commerce & Credit Card Transactions  
+**10 Academy – Week 8 & 9 Challenge | Adey Innovations Inc.**
 
----
-
-## 🎯 Objectives
-
-- Clean and preprocess raw transactional data
-- Enrich with geographic and temporal features
-- Engineer behavior-based features
-- Visualize fraud distribution by user attributes
-- Prepare final datasets for machine learning
+This project develops accurate and explainable machine learning models to detect fraud in both **e-commerce** and **credit card** transaction data. It addresses challenges such as **class imbalance**, **feature engineering**, **geolocation enrichment**, and **model interpretability** using SHAP.
 
 ---
 
-## 📁 Datasets
+## 🎯 Business Objective
 
-| File                          | Description                                           |
-|-------------------------------|-------------------------------------------------------|
-| `Fraud_Data.csv`              | E-commerce transactions with timestamp, IP, device   |
-| `IpAddress_to_Country.csv`    | Maps IP ranges to country                            |
-| `creditcard.csv`              | Credit card transactions with anonymized features    |
+Fraudulent transactions can cause serious financial damage. Our goal is to:
+- Detect fraud without causing friction for real customers
+- Use behavior, time, and location patterns to signal fraud
+- Provide explainable model outputs for transparency and trust
 
 ---
 
-## 🧹 Task 1: Data Cleaning
+## 📁 Datasets Used
+
+| Dataset                    | Description                                                                 |
+|----------------------------|-----------------------------------------------------------------------------|
+| `Fraud_Data.csv`           | E-commerce transactions with timestamps, devices, IPs, and labels           |
+| `IpAddress_to_Country.csv` | Maps IP address ranges to countries                                          |
+| `creditcard.csv`           | Credit card transactions with anonymized features (`V1`–`V28`)              |
+
+---
+
+## 📊 Task 1: Data Cleaning & EDA
 
 ### ✅ E-commerce Data
-- Removed duplicates (0 found)
+- Removed duplicates and missing values
 - Converted `signup_time` and `purchase_time` to datetime
-- Confirmed: **no missing values**
-- Final cleaned file: `fraud_data_clean.csv`
+- Found: 9.4% fraud → **moderate class imbalance**
+- Visual trends: higher fraud in `SEO` and `Ads` traffic, and in `Safari`/`Opera` browsers
 
 ### ✅ Credit Card Data
-- Removed 1,081 duplicate rows
-- Confirmed: **no missing values**
-- Scaled `Amount` and `Time` using MinMaxScaler
-- Final cleaned file: `creditcard_ready.csv`
+- Removed 1,081 duplicates
+- No missing values
+- Found: 0.17% fraud → **extreme class imbalance**
+- Fraud transactions are generally lower in amount
 
 ---
 
-## 📊 Task 1: Exploratory Data Analysis (EDA)
+## 🛠️ Task 2: Feature Engineering & Transformation
 
-### E-commerce Highlights
-
-- **Class distribution**: 90.6% non-fraud, 9.4% fraud → heavy imbalance
-- **Age Distribution**: Majority users between 25–40
-- **Fraud by Source**: Higher fraud rate via `SEO` and `Ads`
-- **Fraud by Browser**: Chrome leads in volume; Safari & Opera show relatively more fraud
-- **Fraud by Sex**: More fraud among male users, but both affected
-- **Top Countries**: United States dominates transaction volume
-
-### Credit Card Highlights
-
-- **Class distribution**: 0.17% fraud → extreme imbalance
-- **Amount by Class**:
-  - Fraudulent transactions skew lower in value
-  - Outliers exist in both classes
-- **Correlation**:
-  - No strong linear correlation between `Time`, `Amount`, and `Class`
+### E-commerce Feature Highlights
+- Time-based: `hour_of_day`, `day_of_week`, `time_since_signup`
+- Behavior-based: `user_transaction_count`, `device_transaction_count`, `transactions_last_hour`
+- Geolocation: `country` derived from `ip_address`
+- One-hot encoding: applied to `browser`, `sex`, `source`, and `country`
+- Scaling: used MinMaxScaler for key numerical features
 
 ---
 
-## 🧠 Task 2: Feature Engineering
+## 🤖 Task 3: Model Training & Evaluation
 
-### Time-Based Features
+### ⚙️ Models Trained (on both datasets)
+- **Logistic Regression** (baseline)
+- **Random Forest**
+- **XGBoost**
 
-| Feature             | Description                                    |
-|---------------------|------------------------------------------------|
-| `hour_of_day`       | Hour the purchase occurred                     |
-| `day_of_week`       | Day of the week                                |
-| `time_since_signup` | Seconds between signup and transaction         |
+### ⚠️ Class Imbalance Strategy
+- Used **SMOTE** only on the training set
+- Preserved original imbalance in the test set for realistic evaluation
 
-### Behavior-Based Features
-
-| Feature                     | Description                                  |
-|-----------------------------|----------------------------------------------|
-| `user_transaction_count`    | Number of transactions per user              |
-| `device_transaction_count`  | Number of transactions per device            |
-| `transactions_last_hour`    | IP-based burst activity within 1 hour window |
-
-### Geographic Feature
-
-- `country`: derived from `ip_address` using IP-to-country mapping
-- Unknown IPs labeled as `"Other"`
-
-Output saved as: `engineered_fraud_data.csv`
+### 📈 Evaluation Metrics
+- F1 Score
+- AUC-PR (Precision-Recall)
+- Confusion Matrix
+- Precision & Recall
 
 ---
 
-## 🧪 Task 3: Encoding, Scaling, Class Analysis
+## 📊 Model Comparison Results
 
-- **Categorical Encoding**:
-  - One-hot encoded `browser`, `sex`, `source`, and `country`
-  - Resulting shape: `(151112, 204)`
-- **Numerical Scaling**:  
-  - Used `MinMaxScaler` on `purchase_value`, `time_since_signup`, and frequency features
-- **Class Balance**:
-  - E-commerce fraud ratio: **9.4%**
-  - Credit card fraud ratio: **0.17%**
-  - Visualized using countplots
+### E-commerce Dataset (`fraud_data_ready.csv`)
+| Model              | F1 Score | Precision | Recall | AUC-PR |
+|--------------------|----------|-----------|--------|--------|
+| Logistic Regression | 0.49     | 0.34      | 0.89   | 0.51   |
+| Random Forest       | 0.67     | 0.60      | 0.77   | 0.73   |
+| **XGBoost**         | **0.69** | **0.61**  | **0.80** | **0.76** ✅
 
-Final modeling-ready dataset: `fraud_data_ready.csv`
+📝 **Best Model**: **XGBoost** — highest F1 and AUC-PR, balancing precision and recall well.
+
+---
+
+### Credit Card Dataset (`creditcard_ready.csv`)
+| Model              | F1 Score | Precision | Recall | AUC-PR |
+|--------------------|----------|-----------|--------|--------|
+| Logistic Regression | 0.11     | 0.07      | 0.69   | 0.12   |
+| Random Forest       | 0.62     | 0.60      | 0.65   | 0.64   |
+| **XGBoost**         | **0.66** | **0.62**  | **0.71** | **0.68** ✅
+
+📝 **Best Model**: **XGBoost** again — best F1, recall, and overall balance.
+
+---
+
+## 🔍 Task 4: SHAP Explainability
+
+### SHAP Visualizations
+- **Summary Plot**: Showed top global drivers (e.g., `time_since_signup`, `device_transaction_count`)
+- **Force Plot**: Explained individual fraud decisions by showing how features increased/decreased the fraud score
+
+### Key Insights
+- Fast signups followed by purchases were a major fraud signal
+- High transaction volume from the same device or IP = suspicious behavior
+- Some browsers and countries had stronger fraud associations
 
 ---
 
 ## 📦 Output Files
 
-| Filename                    | Purpose                          |
-|-----------------------------|----------------------------------|
-| `fraud_data_clean.csv`      | Cleaned e-commerce fraud dataset |
-| `engineered_fraud_data.csv` | With temporal, geo, behavior features |
-| `fraud_data_ready.csv`      | Fully encoded and scaled dataset |
-| `creditcard_ready.csv`      | Cleaned and scaled credit data   |
+| File Name                  | Description                                        |
+|---------------------------|----------------------------------------------------|
+| `fraud_data_clean.csv`    | Cleaned raw e-commerce dataset                     |
+| `engineered_fraud_data.csv` | With temporal, geo, and behavioral features     |
+| `fraud_data_ready.csv`    | Final ML-ready e-commerce data (encoded & scaled) |
+| `creditcard_ready.csv`    | Cleaned and scaled credit card dataset             |
 
 ---
 
-## 📈 Next Steps
+## 📂 Project Structure
 
-Proceed to:
+├── data/ # Input and processed data files
+├── notebooks/
+│ ├── eda_fraud_data.ipynb
+│ ├── eda_credit_card.ipynb
+│ ├── preprocessing_fraud_data.ipynb
+│ ├── modeling_fraud_data.ipynb
+│ ├── modeling_credit_card.ipynb
+│ └── shap_fraud_random_forest.ipynb
+├── src/
+│ ├── data_loader.py
+│ ├── preprocessing.py
+│ ├── feature_engineering.py
+│ └── model_utils.py
+├── README.md
+└── requirements.txt
 
-- Train classification models using `fraud_data_ready.csv`
-- Evaluate with ROC-AUC, precision/recall, SHAP/LIME
-- Explore strategies for class imbalance (resampling, SMOTE, cost-sensitive models)
+## 🧠 Summary
 
+- ✅ Built and explained fraud models for two different transaction domains
+- ✅ Engineered useful behavioral and temporal fraud features
+- ✅ Achieved strong results with XGBoost + SHAP explanations
+- ✅ Maintained clean, modular, and reproducible code structure
