@@ -1,145 +1,132 @@
+# 🕵️‍♂️ Fraud Detection in E-Commerce & Banking
 
-# 🔍 Fraud Detection for E-commerce & Credit Card Transactions  
-**10 Academy – Week 8 & 9 Challenge | Adey Innovations Inc.**
-
-This project develops accurate and explainable machine learning models to detect fraud in both **e-commerce** and **credit card** transaction data. It addresses challenges such as **class imbalance**, **feature engineering**, **geolocation enrichment**, and **model interpretability** using SHAP.
+A machine learning project to detect fraudulent transactions in both e-commerce and credit card payment systems. This project compares multiple models, applies advanced feature engineering, and leverages SHAP for model explainability.
 
 ---
 
-## 🎯 Business Objective
+## 🧠 Project Summary
 
-Fraudulent transactions can cause serious financial damage. Our goal is to:
-- Detect fraud without causing friction for real customers
-- Use behavior, time, and location patterns to signal fraud
-- Provide explainable model outputs for transparency and trust
+This repository showcases a complete fraud detection pipeline—from data preprocessing to model explainability—applied to two distinct domains:
 
----
-
-## 📁 Datasets Used
-
-| Dataset                    | Description                                                                 |
-|----------------------------|-----------------------------------------------------------------------------|
-| `Fraud_Data.csv`           | E-commerce transactions with timestamps, devices, IPs, and labels           |
-| `IpAddress_to_Country.csv` | Maps IP address ranges to countries                                          |
-| `creditcard.csv`           | Credit card transactions with anonymized features (`V1`–`V28`)              |
+- **E-Commerce Fraud Detection** using behavioral and geolocation features.
+- **Credit Card Fraud Detection** using anonymized PCA-transformed features.
 
 ---
 
-## 📊 Task 1: Data Cleaning & EDA
+## 👥 Target Audience
 
-### ✅ E-commerce Data
-- Removed duplicates and missing values
-- Converted `signup_time` and `purchase_time` to datetime
-- Found: 9.4% fraud → **moderate class imbalance**
-- Visual trends: higher fraud in `SEO` and `Ads` traffic, and in `Safari`/`Opera` browsers
+This project is designed for:
 
-### ✅ Credit Card Data
-- Removed 1,081 duplicates
-- No missing values
-- Found: 0.17% fraud → **extreme class imbalance**
-- Fraud transactions are generally lower in amount
+- Data scientists and ML engineers building fraud detection systems.
+- FinTech analysts evaluating fraud signals.
+- Recruiters or instructors reviewing project-based ML competency.
 
 ---
 
-## 🛠️ Task 2: Feature Engineering & Transformation
+## 📁 Repo Structure Overview
 
-### E-commerce Feature Highlights
-- Time-based: `hour_of_day`, `day_of_week`, `time_since_signup`
-- Behavior-based: `user_transaction_count`, `device_transaction_count`, `transactions_last_hour`
-- Geolocation: `country` derived from `ip_address`
-- One-hot encoding: applied to `browser`, `sex`, `source`, and `country`
-- Scaling: used MinMaxScaler for key numerical features
-
----
-
-## 🤖 Task 3: Model Training & Evaluation
-
-### ⚙️ Models Trained (on both datasets)
-- **Logistic Regression** (baseline)
-- **Random Forest**
-- **XGBoost**
-
-### ⚠️ Class Imbalance Strategy
-- Used **SMOTE** only on the training set
-- Preserved original imbalance in the test set for realistic evaluation
-
-### 📈 Evaluation Metrics
-- F1 Score
-- AUC-PR (Precision-Recall)
-- Confusion Matrix
-- Precision & Recall
-
----
-
-## 📊 Model Comparison Results
-
-### E-commerce Dataset (`fraud_data_ready.csv`)
-| Model              | F1 Score | Precision | Recall | AUC-PR |
-|--------------------|----------|-----------|--------|--------|
-| Logistic Regression | 0.49     | 0.34      | 0.89   | 0.51   |
-| Random Forest       | 0.67     | 0.60      | 0.77   | 0.73   |
-| **XGBoost**         | **0.69** | **0.61**  | **0.80** | **0.76** ✅
-
-📝 **Best Model**: **XGBoost** — highest F1 and AUC-PR, balancing precision and recall well.
-
----
-
-### Credit Card Dataset (`creditcard_ready.csv`)
-| Model              | F1 Score | Precision | Recall | AUC-PR |
-|--------------------|----------|-----------|--------|--------|
-| Logistic Regression | 0.11     | 0.07      | 0.69   | 0.12   |
-| Random Forest       | 0.62     | 0.60      | 0.65   | 0.64   |
-| **XGBoost**         | **0.66** | **0.62**  | **0.71** | **0.68** ✅
-
-📝 **Best Model**: **XGBoost** again — best F1, recall, and overall balance.
-
----
-
-## 🔍 Task 4: SHAP Explainability
-
-### SHAP Visualizations
-- **Summary Plot**: Showed top global drivers (e.g., `time_since_signup`, `device_transaction_count`)
-- **Force Plot**: Explained individual fraud decisions by showing how features increased/decreased the fraud score
-
-### Key Insights
-- Fast signups followed by purchases were a major fraud signal
-- High transaction volume from the same device or IP = suspicious behavior
-- Some browsers and countries had stronger fraud associations
-
----
-
-## 📦 Output Files
-
-| File Name                  | Description                                        |
-|---------------------------|----------------------------------------------------|
-| `fraud_data_clean.csv`    | Cleaned raw e-commerce dataset                     |
-| `engineered_fraud_data.csv` | With temporal, geo, and behavioral features     |
-| `fraud_data_ready.csv`    | Final ML-ready e-commerce data (encoded & scaled) |
-| `creditcard_ready.csv`    | Cleaned and scaled credit card dataset             |
-
----
-
-## 📂 Project Structure
-
-├── data/ # Input and processed data files
+```
+fraud-detection-ecommerce-banking/
+│
+├── data/
+│   ├── Fraud_Data.csv
+│   ├── IpAddress_to_Country.csv
+│   ├── creditcard.csv
+│   └── [processed CSVs]
+│
 ├── notebooks/
-│ ├── eda_fraud_data.ipynb
-│ ├── eda_credit_card.ipynb
-│ ├── preprocessing_fraud_data.ipynb
-│ ├── modeling_fraud_data.ipynb
-│ ├── modeling_credit_card.ipynb
-│ └── shap_fraud_random_forest.ipynb
+│   ├── eda_fraud_data.ipynb
+│   ├── eda_credit_card.ipynb
+│   ├── modeling_fraud.ipynb
+│   ├── modeling_credit.ipynb
+│   └── shap_explainer.ipynb
+│
 ├── src/
-│ ├── data_loader.py
-│ ├── preprocessing.py
-│ ├── feature_engineering.py
-│ └── model_utils.py
+│   ├── data_loader.py
+│   ├── preprocessing.py
+│   ├── feature_engineering.py
+│   └── model_utils.py
+│
+├── models/
+│   ├── rf_fraud_model.pkl
+│   ├── rf_credit_model.pkl
+│   └── xgb_credit_model.pkl
+│
+├── requirements.txt
 ├── README.md
-└── requirements.txt
+└── .gitignore
+```
 
-## 🧠 Summary
+---
 
-- ✅ Built and explained fraud models for two different transaction domains
-- ✅ Engineered useful behavioral and temporal fraud features
-- ✅ Achieved strong results with XGBoost + SHAP explanations
-- ✅ Maintained clean, modular, and reproducible code structure
+## 🧱 Setup Instructions
+
+### 🔧 Prerequisites
+
+- Python 3.10+
+- pip or conda
+- Git
+
+### 🛠 Installation
+
+```bash
+# Clone the repo
+git clone https://github.com/Filimon-H/fraud-detection-ecommerce-bankinggit
+cd fraud-detection-ecommerce-banking
+
+# Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+---
+
+## 🚀 Usage Instructions
+
+### 📊 Run Notebooks
+
+Open Jupyter Lab or VSCode and run the following notebooks in order:
+
+1. `eda_fraud_data.ipynb` – Exploratory analysis of e-commerce data.
+2. `eda_credit_card.ipynb` – Analysis of anonymized credit card data.
+3. `modeling_fraud.ipynb` – Train, evaluate, and save models for e-commerce fraud.
+4. `modeling_credit.ipynb` – Do the same for credit card fraud.
+5. `shap_explainer.ipynb` – Visualize model explanations using SHAP.
+
+---
+
+## 📌 Key Features
+
+- 🧹 Cleaned and preprocessed complex real-world datasets
+- 🌍 Geo-enriched e-commerce data via IP-to-country mapping
+- 📈 Advanced feature engineering (time since signup, frequency features)
+- ⚖️ SMOTE for class imbalance handling
+- 🤖 Model comparison: Logistic Regression, Random Forest, XGBoost
+- 🔍 SHAP visualizations for interpretability
+
+---
+
+## 📊 Model Insights
+
+| Dataset        | Best Model       | F1 Score | AUC-PR | Strengths                         |
+|----------------|------------------|----------|--------|----------------------------------|
+| Credit Card    | XGBoost          | 0.676    | 0.8016 | High precision, effective ranking |
+| E-Commerce     | Random Forest    | 0.6784   | 0.7779 | Balanced performance, fast train |
+
+> 🏆 Final Recommendation: Use **Random Forest** for deployment due to better interpretability and performance consistency.
+
+---
+
+## 📜 License
+
+MIT License – see [LICENSE](LICENSE) for details.
+
+---
+
+## 👤 Maintainer
+
+**Filimon Hailemariam**  
+GitHub: https://github.com/Filimon-H/fraud-detection-ecommerce-banking
